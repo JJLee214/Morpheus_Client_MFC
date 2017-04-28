@@ -26,6 +26,7 @@ CMorpheus_Client_MFCApp::CMorpheus_Client_MFCApp()
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 
 	// TODO: 여기에 생성 코드를 추가합니다.
+	m_pClient = NULL;
 	// InitInstance에 모든 중요한 초기화 작업을 배치합니다.
 }
 
@@ -108,3 +109,71 @@ BOOL CMorpheus_Client_MFCApp::InitInstance()
 	return FALSE;
 }
 
+// 서버 소켓으로 접속을 요청한다
+void CMorpheus_Client_MFCApp::Connect()
+{
+	CMorpheus_Client_MFCDlg dlg;
+	//if (dlg.DoModal() == IDOK)
+	//{
+		//AfxMessageBox(_T("내용"), MB_RETRYCANCEL | MB_ICONINFORMATION);
+		m_pClient = new CClientSocket; // 클라이언트 소켓 객체를 동적 메모리 할당한 후
+		m_pClient->Create(); // 클라이언트 소켓 생성한다.
+							 // 서버의 IP 주소와 포트 번호를 설정하여 서버에 연결을 시도한다.
+		//m_pClient->Connect(dlg.m_strAddress, 5000);
+		m_pClient->Connect(_T("192.168.1.10"), 5000);
+		//// <보내기> 버튼 활성화
+		//->GetDlgItem(BUTTON_SendToServer)->EnableWindow(TRUE);
+		//// <서버 연결...> 버튼 비활성화
+		//m_pMainwnd->GetDlgItem(BUTTON_Connect)->EnableWindow(TRUE);
+	//}
+}
+
+
+// 생성된 소켓을 닫고 메모리를 해제한다
+void CMorpheus_Client_MFCApp::CleanUp()
+{
+	//생성된 소켓을 닫고 메모리를 해제한다.
+	if (m_pClient)
+		delete m_pClient;
+
+}
+
+
+// 데이터를 전송한다
+void CMorpheus_Client_MFCApp::SendData(CString strData)
+{
+	if (m_pClient)
+	{
+		strData.Insert(strData.GetLength(), _T("\0"));
+		m_pClient->Send(strData, 100);
+		CString strIP, strText;
+		UINT nPort;
+		m_pClient->GetSockName(strIP, nPort); //자신의 IP주소와 포트 번호 얻음
+		strText.Format(_T("[ %s ] %s"), strIP, strData);
+		//((CListBox*)m_pMainWnd->GetDlgItem(IDC_LIST1))->InsertString(-1, strText);
+	}
+}
+
+
+// 데이터를 수신받는다
+void CMorpheus_Client_MFCApp::ReceiveData()
+{
+	char temp[1000];
+	m_pClient->Receive(temp, sizeof(temp));
+	CString strIP, strText;
+	UINT nPort;
+	m_pClient->GetPeerName(strIP, nPort); //상대방의 IP주소하고 포트 번호 얻음
+	strText.Format(_T("[ %s ] %s"), strIP, temp);
+	//((CListBox*)m_pMainWnd->GetDlgItem(IDC_LIST1))->InsertString(-1, strText);
+}
+
+
+// 연결된 소켓이 닫히면 호출한다.
+void CMorpheus_Client_MFCApp::CloseChild()
+{
+	//((CListBox*)m_pMainWnd->GetDlgItem(IDC_LIST1))->InsertString(-1, _T("상대방 소켓 닫힘"));
+	//<보내기> 버튼 비활성화
+	m_pMainWnd->GetDlgItem(BUTTON_SendToServer)->EnableWindow(FALSE);
+	//<서버 연결..> 버튼 활성화
+	m_pMainWnd->GetDlgItem(BUTTON_Connect)->EnableWindow(TRUE);
+}

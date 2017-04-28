@@ -185,6 +185,9 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientSocket.h" />
+    <ClInclude Include="ConnectDlg.h" />
+    <ClInclude Include="MC_Socket.h" />
     <ClInclude Include="Morpheus_Client_MFC.h" />
     <ClInclude Include="Morpheus_Client_MFCDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -192,6 +195,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientSocket.cpp" />
+    <ClCompile Include="ConnectDlg.cpp" />
     <ClCompile Include="Morpheus_Client_MFC.cpp" />
     <ClCompile Include="Morpheus_Client_MFCDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -213,4 +218,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="Morpheus_Client_MFC.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

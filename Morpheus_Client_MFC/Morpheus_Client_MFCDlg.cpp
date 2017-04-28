@@ -6,6 +6,7 @@
 #include "Morpheus_Client_MFC.h"
 #include "Morpheus_Client_MFCDlg.h"
 #include "afxdialogex.h"
+#include "MC_Socket.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -64,6 +65,13 @@ BEGIN_MESSAGE_MAP(CMorpheus_Client_MFCDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDOK, &CMorpheus_Client_MFCDlg::OnBnClickedOk)
+	ON_BN_CLICKED(BUTTON_Cancel, &CMorpheus_Client_MFCDlg::OnBnClickedCancel)
+	ON_NOTIFY(IPN_FIELDCHANGED, IP_MyLocalIP, &CMorpheus_Client_MFCDlg::OnIpnFieldchangedMylocalip)
+	ON_NOTIFY(IPN_FIELDCHANGED, IP_ServerLocalIP, &CMorpheus_Client_MFCDlg::OnIpnFieldchangedServerlocalip)
+	ON_BN_CLICKED(BUTTON_Connect, &CMorpheus_Client_MFCDlg::OnBnClickedConnect)
+	ON_BN_CLICKED(BUTTON_Disconnect, &CMorpheus_Client_MFCDlg::OnBnClickedDisconnect)
+	ON_BN_CLICKED(BUTTON_SendToServer, &CMorpheus_Client_MFCDlg::OnBnClickedSendtoserver)
 END_MESSAGE_MAP()
 
 
@@ -72,7 +80,7 @@ END_MESSAGE_MAP()
 BOOL CMorpheus_Client_MFCDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
+	
 	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
 
 	// IDM_ABOUTBOX는 시스템 명령 범위에 있어야 합니다.
@@ -93,13 +101,22 @@ BOOL CMorpheus_Client_MFCDlg::OnInitDialog()
 		}
 	}
 
+	
+
 	// 이 대화 상자의 아이콘을 설정합니다.  응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
 	//  프레임워크가 이 작업을 자동으로 수행합니다.
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	//MC_Socket* ClientSocket = MC_Socket::GetInstance();
+	//* 서버와의 접속을 체크하여 메세지를 발생시켜주기 위하여 비동기를 걸어준다.
+	//* WSAAsyncSelect(이벤트가 일어날 소켓, 메세지를 받을 윈도우, 보낼 메세지, 체크할 이벤트);
+	//WSAAsyncSelect(ClientSocket->mh_my_socket, m_hWnd, 10000, FD_CONNECT);
+	//WSAEventSelect(ClientSocket->mh_my_socket, m_hWnd, 10000, FD_CONNECT);
 
+	SetDlgItemText(IP_MyLocalIP, _T("192.168.0.5"));
+	SetDlgItemText(IP_ServerLocalIP, _T("192.168.1.10"));
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -152,3 +169,59 @@ HCURSOR CMorpheus_Client_MFCDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CMorpheus_Client_MFCDlg::OnBnClickedOk()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CDialogEx::OnOK();
+}
+
+
+void CMorpheus_Client_MFCDlg::OnBnClickedCancel()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CMorpheus_Client_MFCDlg::OnIpnFieldchangedMylocalip(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMIPADDRESS pIPAddr = reinterpret_cast<LPNMIPADDRESS>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+
+void CMorpheus_Client_MFCDlg::OnIpnFieldchangedServerlocalip(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMIPADDRESS pIPAddr = reinterpret_cast<LPNMIPADDRESS>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+
+void CMorpheus_Client_MFCDlg::OnBnClickedConnect()
+{
+	//*IP컨트롤에 입력받은 서버의 IP주소를 m_strAddress 변수에 저장
+	GetDlgItemText(IP_ServerLocalIP, m_strAddress);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	
+	theApp.Connect();
+	//app.Connect();
+	//OnOK();
+
+}
+
+
+void CMorpheus_Client_MFCDlg::OnBnClickedDisconnect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	theApp.CleanUp();
+}
+
+
+void CMorpheus_Client_MFCDlg::OnBnClickedSendtoserver()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	theApp.SendData(_T("1"));
+}

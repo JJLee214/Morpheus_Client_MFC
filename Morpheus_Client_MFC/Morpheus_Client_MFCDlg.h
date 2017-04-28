@@ -31,4 +31,15 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedCancel();
+	afx_msg void OnIpnFieldchangedMylocalip(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnIpnFieldchangedServerlocalip(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedConnect();
+	afx_msg void OnBnClickedDisconnect();
+
+	CString m_strAddress; //*IP컨트롤에 입력받은 서버의 IP주소를 저장할 변수
+	//CMorpheus_Client_MFCApp app;
+	afx_msg void OnBnClickedSendtoserver();
 };
